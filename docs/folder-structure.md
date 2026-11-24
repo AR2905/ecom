@@ -1,18 +1,21 @@
 # Project Folder Structure (Task 0.8)
 
-This is the target layout. Task 1.4 will create it; tasks after that place files according to these rules.
+This is the target layout, created in Task 1.4; tasks after that place files according to these rules.
 
 ## Root
 
 ```
 ecom/
-├── src/                     # all application code
+├── src/                     # all application code, including proxy.ts
 ├── prisma/                  # schema.prisma, migrations/, seed.ts
 ├── docs/                    # architecture, requirements, API contracts, ADRs
 ├── public/                  # static assets (favicons, logos)
 ├── tests/                   # cross-cutting e2e + shared test utilities
 ├── .github/workflows/       # CI/CD (Task 12.10)
 ├── .env.example             # variable names only (Task 1.5)
+├── .editorconfig            # formatting conventions (Task 1.8)
+├── .gitattributes           # line endings and binary rules (Task 1.8)
+├── components.json          # shadcn/ui configuration (Task 1.3)
 ├── Dockerfile               # production image (Task 12.9)
 ├── docker-compose.yml       # local Postgres + Redis (Task 1.7)
 ├── README.md

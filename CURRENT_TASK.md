@@ -2,105 +2,124 @@
 
 ## Task ID and Name
 
-**Tasks 0.2–0.9 — Phase 0 completion** (executed as one explicitly requested batch; the normal one-task-at-a-time rule was overridden by the user for this phase only).
+**Tasks 1.2–1.8 — Phase 1 completion** (executed as one explicitly requested batch; the normal one-task-at-a-time rule was overridden by the user for this phase only).
 
 ## Objective
 
-Complete the remaining Phase 0 design work: define functional/non-functional requirements, roles and permissions, application modules, system architecture, database ER design, API contracts, folder structure, and scalability/performance strategy — then update project documentation so Phase 0 is verifiably complete.
+Finish the project foundation: tighten TypeScript/ESLint, configure Tailwind and shadcn/ui, create the planned folder tree, add validated environment configuration, add typed errors and structured logging, set up local PostgreSQL/Redis, and define Git/development conventions — with verification and documentation updates.
 
 ## What Was Implemented
 
-- **0.2** `docs/requirements.md` — FR/NFR catalogues with IDs, P0/P1/P2 priorities, explicit constraints, out-of-scope list and traceability IDs.
-- **0.3** `docs/roles-and-permissions.md` — four roles (`GUEST`, `CUSTOMER`, `ADMIN`, `SUPER_ADMIN`), `resource:action` matrix, ownership rules, special constraints and enforcement points.
-- **0.4** `docs/modules.md` — 15 modules with ownership, facade signatures, dependencies, future-service candidates, cross-module workflows and planned event names. Dependency graph included.
-- **0.5** `docs/architecture.md` — context/container/component views, request lifecycle, three sequence flows (cached catalog, checkout/payment, idempotent webhook), cross-cutting concerns, seven ADRs, deployment view and risks.
-- **0.6** `docs/database/er-diagram.md` — four Mermaid ER diagrams, constraints, index catalogue and deletion policy.
-- **0.7** `docs/api/README.md` — conventions, response envelope, error codes, full endpoint inventory, detailed Zod-backed contracts, rate limits and idempotency semantics.
-- **0.8** `docs/folder-structure.md` — target tree, module anatomy, import rules, alias policy and enforcement checklist.
-- **0.9** `docs/scalability.md` — performance budgets, caching layers/invalidation, DB strategy, write correctness, stateless scaling, job triggers, CDN/images, growth triggers, observability and anti-patterns.
-- `README.md` — status updated to "Phase 0 complete", Phase 0 documentation index added, API docs pointer updated, roadmap phase 0 marked complete, all Phase 0 checklist items checked.
-- `CURRENT_TASK.md` — replaced with this batch record.
-
-No application code, packages, migrations, endpoints or tests were created. Phase 0 is design documentation only.
+- **1.2** Added `noUncheckedIndexedAccess`, `noImplicitOverride`, `noFallthroughCasesInSwitch` and `forceConsistentCasingInFileNames` to `tsconfig.json`; added `typecheck` and `verify` npm scripts; added ESLint rules for console usage and unused variables.
+- **1.3** Initialized shadcn/ui with the `nova` preset, Radix base and CSS variables; generated `components.json`, `src/lib/utils.ts`, `src/components/ui/button.tsx`, theme variables and Geist font wiring.
+- **1.4** Created the full planned directory tree (98 `.gitkeep` placeholders across modules, shared libs, app route groups, prisma, tests and docs) and added an ESLint `no-restricted-imports` rule that blocks cross-module imports except through service facades.
+- **1.5** Installed Zod, added `.env.example` with names only, added `src/config/env.ts` with fail-fast parsing, empty-value normalization and `requireEnv()`, and negated `.env.example` in `.gitignore`.
+- **1.6** Added an `AppError` hierarchy, HTTP error mapping/envelope helpers with request IDs, Pino structured logging with secret redaction, and a Next 16 `proxy.ts` that propagates `x-request-id` into request and response headers.
+- **1.7** Added `docker-compose.yml` with PostgreSQL 16 and Redis 7, persistent volumes, health checks, configurable host ports, and `dev:infra` / `dev:infra:down` scripts.
+- **1.8** Added `.editorconfig`, `.gitattributes`, README development conventions (branch names, Conventional Commits, verification gate, docs rule), and documented the local Docker flow. No git config was changed and no commit was created.
+- Updated `README.md` (status, setup, conventions, env reference, roadmap, checklist) and `docs/folder-structure.md`.
 
 ## Files Created
 
-- `docs/requirements.md`
-- `docs/roles-and-permissions.md`
-- `docs/modules.md`
-- `docs/architecture.md`
-- `docs/database/er-diagram.md`
-- `docs/api/README.md`
-- `docs/folder-structure.md`
-- `docs/scalability.md`
+- `components.json`
+- `src/components/ui/button.tsx`
+- `src/lib/utils.ts`
+- `src/config/env.ts`
+- `src/lib/errors/app-error.ts`
+- `src/lib/errors/http.ts`
+- `src/lib/http/response.ts`
+- `src/lib/logging/logger.ts`
+- `src/proxy.ts`
+- `.env.example`
+- `docker-compose.yml`
+- `.editorconfig`
+- `.gitattributes`
+- 98 `.gitkeep` files establishing the planned directories
 
 ## Files Modified
 
-- `README.md` — status line, scope cross-reference, Phase 0 documentation table, API docs location, roadmap status, checklist items 0.2–0.9.
-- `CURRENT_TASK.md` — rewritten from the Task 0.1 record to this Phase 0 record.
+- `package.json` — scripts (`typecheck`, `verify`, `dev:infra`, `dev:infra:down`), dependencies and `shadcn` moved to devDependencies.
+- `package-lock.json` — synced dependency tree.
+- `tsconfig.json`, `eslint.config.mjs` — stricter checks and boundary rule.
+- `src/app/globals.css`, `src/app/layout.tsx` — shadcn theme and font setup.
+- `.gitignore` — `!.env.example` negation.
+- `README.md`, `CURRENT_TASK.md`, `docs/folder-structure.md` — documentation.
+- `src/middleware.ts` was removed and replaced by `src/proxy.ts`.
 
 ## Packages Installed
 
-None. No package manager was invoked; no `package.json` exists yet.
+- shadcn init: `class-variance-authority`, `cn`, `lucide-react`, `radix-ui`, `tw-animate-css`, `shadcn` (CLI moved to devDependencies).
+- `zod@^4.6.7` for environment and future request validation.
+- `pino@^10` for structured server logging.
+
+`npm audit --omit=dev` reports **0 vulnerabilities**. Four moderate advisories remain in dev-only tooling (`minimatch` via `ts-morph` via the `shadcn` CLI); they are not part of the production dependency graph and do not affect the built app.
 
 ## Important Code Explanations
 
-No application code was produced. Important design decisions embedded in the documents:
-
-- **Requirement IDs (FR-*/NFR-*)** allow each later task to trace back to a testable requirement instead of relying on prose.
-- **RBAC with ownership scopes** (`own` vs `any`) avoids a permission explosion: the same `cart:read` permission means "own cart" for a customer, and repositories enforce the scope with `userId` filters.
-- **Service facades** are the only cross-module import target. This keeps Prisma models from leaking between modules and makes later extraction a contract change, not a rewrite.
-- **Integer minor units for money** (paise) are used in DB, services and API; this removes float drift and matches Razorpay's amount format. `ratingAvg` is stored as an integer out of 100 for the same reason.
-- **Idempotency** is specified at both layers: `Idempotency-Key` for order/payment creation and a unique `(provider, eventId)` key for webhooks.
-- **Stock correctness** uses a conditional `UPDATE ... WHERE quantityAvailable >= n` inside a transaction, with TTL reservations rather than in-process locks.
-- **Cache invalidation is tag-based** and explicitly excludes personalized data, addressing the Next.js caching vs. cart consistency risk.
-- **Mermaid diagrams** were chosen so the architecture and ER designs can be reviewed and diffed in Git like any other text file.
+- **TypeScript strictness:** `noUncheckedIndexedAccess` forces explicit handling of possibly-missing indexed values, which matters for cart items and API result arrays. `noImplicitOverride` and `noFallthroughCasesInSwitch` reduce silent bugs in future state machines.
+- **ESLint boundary rule:** imports of `@/modules/*/repositories/*`, `schemas/*`, `types/*` and `components/*` are rejected outside a module; callers must use `@/modules/*/services`.
+- **shadcn/ui:** components are copied into the repository (not imported from a runtime package), so they can be customized. `components.json` pins aliases and theme settings.
+- **`src/config/env.ts`:** `z.preprocess` converts empty strings to `undefined` so an unedited `.env.example` copy does not fail validation; `requireEnv()` is for variables that become mandatory later (database, auth, Razorpay).
+- **Error layer:** `AppError` subclasses carry stable error codes and HTTP status; `errorResponse()` maps unknown errors to `INTERNAL_ERROR` without leaking stack traces, and `reportError()` logs them with the request ID.
+- **Pino redaction:** password, token, cookie, authorization and Razorpay signature fields are censored so logs cannot become a credential leak.
+- **`src/proxy.ts`:** Next 16 renamed the deprecated `middleware` convention to `proxy`. It clones request headers to inject `x-request-id`, which the response helpers read back via `next/headers`.
+- **Docker Compose:** named volumes survive container recreation; health checks allow later tasks to wait for readiness instead of sleeping blindly.
 
 ## Architecture Decisions
 
-See the ADR table in `docs/architecture.md` (modular monolith, Prisma/PostgreSQL, Auth.js, Redis-as-cache, Razorpay hosted checkout, facade-only boundaries, integer money). All are design decisions; none are implemented yet.
+- Keep `cacheComponents` disabled (from Task 1.1) so the documented ISR/tag strategy remains usable; revisit in Task 4.10/11.1.
+- Use the shadcn `radix-nova` preset for accessible primitives and CSS-variable theming.
+- Keep the `shadcn` CLI as a devDependency because `globals.css` imports `shadcn/tailwind.css` at build time; production runtime does not need it.
+- Use Next's `proxy` convention instead of deprecated `middleware`.
+- Do not add Husky/git hooks: no git config changes were made; conventions are documented and enforced via `npm run verify`.
+- Authorization will be enforced in services and route guards, not only in `proxy` (per Next's guidance).
 
 ## Database Changes
 
-Logical design only: entity set, relationships, constraints and indexes documented in `docs/database/er-diagram.md`. No `prisma/schema.prisma`, migration or seed file was created — that starts in Tasks 2.2–2.6.
+No Prisma schema or migration. Docker Compose now provides local PostgreSQL 16 and Redis 7 services with persistent volumes; Prisma setup remains Task 2.2 onward.
 
 ## APIs Created or Modified
 
-No endpoints were implemented. `docs/api/README.md` defines the contracts that Phase 4–8 implementations must satisfy.
+No route handlers were added. Reusable response helpers (`ok`, `paginated`, `errorResponse`) and error types are available for Phase 3+ endpoints. `src/proxy.ts` adds `x-request-id` to all non-static requests.
 
 ## Commands Executed
 
-- File writes/edits for the eight new documents and two documentation updates.
-- `Get-ChildItem -Recurse -File -Path docs` — listed the eight documentation files.
-- `rg -c '```mermaid' docs` — **failed** (`rg` is not installed in this shell).
-- Fallback: content search tool used to verify Mermaid blocks and checklist state.
+- `npm install zod@^4`, `npm install pino@^10`, `npx shadcn@latest init ...`, `npm install --save-dev shadcn@^4.23.0`, `npm uninstall shadcn` (reverted after CSS import discovery).
+- `npx shadcn@latest init --template next --base radix --preset nova --yes --no-monorepo`.
+- `npm run verify` repeatedly (lint + typecheck + build), including after clearing a stale `.next` Turbopack cache.
+- `npm audit --omit=dev --audit-level=moderate` -> 0 vulnerabilities.
+- `docker compose config` -> valid; `docker compose up -d` -> failed because the Docker daemon is not running.
+- `git status --short --branch`, `git remote -v` -> `main` tracking `origin/main`; no config changes.
 
 ## Tests Performed and Results
 
-Documentation-only task; TypeScript, ESLint, unit and API tests are not applicable (no source code exists).
+| Check | Result |
+| --- | --- |
+| `npm run lint` | Pass |
+| `npm run typecheck` | Pass |
+| `npm run build` | Pass (2 static pages, proxy active, no warnings) |
+| `npm audit --omit=dev` | 0 vulnerabilities |
+| `docker compose config` | Valid PostgreSQL + Redis configuration |
+| `docker compose up -d` | Blocked: Docker daemon not running in this environment |
+| Automated unit/API/E2E tests | None yet (Tasks 12.5–12.8) |
 
-Verification performed:
-- README Phase 0 checklist contains exactly 9 checked items (0.1–0.9), all others unchecked.
-- Eight documentation files exist under `docs/`.
-- Ten Mermaid diagram blocks are present across `docs/architecture.md`, `docs/database/er-diagram.md` and `docs/modules.md`.
-- README roadmap shows Phase 0 complete and Phase 1 not started.
-
-Mermaid diagrams were not rendered through a Markdown renderer; syntax will be visually reviewed during implementation.
+No commit was created.
 
 ## Problems Encountered and Solutions
 
-- **Batch override:** the user explicitly requested 0.2–0.9 in one batch, conflicting with the standing one-task rule. Followed the explicit instruction, kept per-task documentation, and will stop before Phase 1.
-- **`rg` unavailable:** switched to the content search tool for verification counts.
-- **Money representation conflict:** percentage coupons create fractional amounts; resolved by fixing integer minor units everywhere and rounding at line-item calculation, documented in requirements, ER design and API contracts.
-- **Git root mismatch remains:** `ecom` is inside a repository rooted at `C:/Users/ASHISH`. Still deferred to Task 1.8; no repository initialized.
-- **Entity consistency:** `AnalyticsEvent` was added to the ER design so it matches the analytics module ownership in Task 0.4.
+- **shadcn init prompted for a preset despite `--yes`:** supplied `--preset nova` explicitly; `radix-nova` was rejected as an invalid preset name.
+- **Next 16 middleware deprecation warning:** replaced `src/middleware.ts` with `src/proxy.ts` exporting `proxy`.
+- **`shadcn` CLI dependency caused 4 moderate advisories:** removing the package broke `shadcn/tailwind.css` resolution; moved it to devDependencies instead, keeping production audit clean.
+- **Turbopack stale resolution cache:** after dependency changes, build failed until `.next` was deleted; cleared and rebuilt successfully.
+- **Docker daemon unavailable:** Compose file validated statically; containers could not be started here. Runtime verification must be done when Docker Desktop is running.
+- **Git context:** `ecom` is already a repository on `main` with `origin/main`; no repository initialization or config changes were needed.
 
 ## Remaining Work
 
-Phase 0 is complete. All 103 remaining tasks (Phases 1–12) are unchecked in `README.md`. Next phase requires actual project initialization, packages, configuration and code.
+Phase 1 is complete. Phase 2 (PostgreSQL, Prisma, schema, migrations, Redis client, connection management) remains unchecked in `README.md`.
 
 ## Next Task
 
-**Task 1.1 — Initialize Next.js project**
+**Task 2.1 — Configure PostgreSQL**
 
 Wait for explicit approval before starting it.

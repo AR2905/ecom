@@ -2,7 +2,7 @@
 
 A production-oriented e-commerce platform built as a **modular monolith** with Next.js App Router. This repository is being built one task at a time; every completed task is documented in [`CURRENT_TASK.md`](./CURRENT_TASK.md).
 
-**Current status:** Phase 0 complete (Tasks 0.1–0.9). Next: Phase 1 — Project Foundation.
+**Current status:** Phase 1 complete (Tasks 1.1–1.8). Next: Phase 2 — Database & Infrastructure.
 
 ## Overview
 
@@ -45,7 +45,7 @@ This section records the interpreted scope. Formal requirements, roles, modules 
 
 | Layer | Choice |
 | --- | --- |
-| Application | Next.js (latest stable, App Router), React, TypeScript strict |
+| Application | Next.js 16.4.6 (App Router), React 19.3.0, TypeScript strict |
 | Styling / UI | Tailwind CSS, shadcn/ui |
 | Validation | Zod |
 | Backend | Route Handlers, Server Actions, service layer, repository pattern |
@@ -104,9 +104,28 @@ ecom/
 
 ## Setup Instructions
 
-> **Planned — not yet implemented.** Arrives in Tasks 1.1–1.7: initialize Next.js, install dependencies, add `.env.example`, and create Docker Compose for PostgreSQL and Redis.
->
-> Target developer flow: `npm install` -> copy `.env.example` to `.env.local` -> `docker compose up -d` -> `npx prisma migrate dev` -> `npm run dev`.
+**Implemented (Phase 1):** Next.js 16.4.6 App Router project with TypeScript strict, Tailwind CSS v4, shadcn/ui, ESLint, the planned folder tree, `.env.example`, typed errors, structured logging and Docker Compose for PostgreSQL/Redis.
+
+```bash
+npm ci                 # install from package-lock.json
+cp .env.example .env   # then fill in local-only values
+npm run dev:infra      # start PostgreSQL + Redis containers
+npm run dev            # http://localhost:3000
+npm run verify         # lint + typecheck + production build
+```
+
+**Still planned:** Prisma schema and migrations (Phase 2), application features (Phases 3–10), production Docker image and CI/CD (Phase 12).
+
+## Development Conventions
+
+- Repository: `main` is protected; work happens on short-lived branches.
+- Branch naming: `task/<id>-<slug>` (for example `task/1.8-git-conventions`), `fix/<slug>`, `chore/<slug>`.
+- Commit messages follow Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `perf:`.
+- Run `npm run verify` (lint + typecheck + build) before opening a pull request.
+- Keep one task per pull request; update `README.md` and `CURRENT_TASK.md` before considering a task complete.
+- Never commit secrets, `.env.local`, generated build output or real payment/email credentials.
+- Business logic belongs in module services; route handlers validate and delegate.
+- Prefer Server Components; add `"use client"` only when interactivity is required.
 
 ## Environment Variables Reference
 
@@ -116,7 +135,9 @@ Names and purposes only. No real values belong in this repository; `.env.example
 | --- | --- |
 | `DATABASE_URL` | Pooled PostgreSQL connection string used by Prisma Client |
 | `DIRECT_URL` | Direct PostgreSQL connection used for migrations |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Docker Compose settings for the local PostgreSQL container |
 | `REDIS_URL` | Redis connection string for cache and rate limiting |
+| `REDIS_PORT` | Host port published by the local Redis container |
 | `AUTH_SECRET` | Secret used by Auth.js to sign/encrypt session cookies |
 | `AUTH_URL` | Canonical auth base URL for callbacks |
 | `NEXT_PUBLIC_APP_URL` | Public application URL used in links and redirects |
@@ -134,7 +155,15 @@ Names and purposes only. No real values belong in this repository; `.env.example
 
 ## Development Commands
 
-> **Planned** until Task 1.2: `npm run dev`, `npm run build`, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:e2e`, `npx prisma studio`, `npx prisma migrate dev`.
+| Command | Status | Purpose |
+| --- | --- | --- |
+| `npm run dev` | Available | Development server |
+| `npm run build` | Available | Production build |
+| `npm run start` | Available | Serve production build |
+| `npm run lint` | Available | ESLint (Next.js configs) |
+| `npx tsc --noEmit` | Available | TypeScript check (script added in Task 1.2) |
+| `npm run typecheck`, `npm run test`, `npm run test:e2e` | Planned | Tasks 1.2 and 12.x |
+| `npx prisma studio`, `npx prisma migrate dev` | Planned | Task 2.x |
 
 ## API Documentation Location
 
@@ -161,7 +190,7 @@ Endpoint contracts are in [`docs/api/README.md`](./docs/api/README.md). Zod sche
 | Phase | Focus | Status |
 | --- | --- | --- |
 | 0 | Requirement analysis & architecture | Complete |
-| 1 | Project foundation | Not started |
+| 1 | Project foundation | Complete |
 | 2 | Database & infrastructure | Not started |
 | 3 | Authentication & authorization | Not started |
 | 4 | Product catalog | Not started |
@@ -190,14 +219,14 @@ Only checked after implementation, verification and documentation are complete.
 - [x] 0.9 Document scalability and performance strategy
 
 ### Phase 1 — Project Foundation
-- [ ] 1.1 Initialize Next.js project
-- [ ] 1.2 Configure TypeScript and ESLint
-- [ ] 1.3 Configure Tailwind and shadcn/ui
-- [ ] 1.4 Establish folder structure
-- [ ] 1.5 Configure environment variables
-- [ ] 1.6 Configure error handling and logging
-- [ ] 1.7 Configure Docker and local development environment
-- [ ] 1.8 Set up Git and development conventions
+- [x] 1.1 Initialize Next.js project
+- [x] 1.2 Configure TypeScript and ESLint
+- [x] 1.3 Configure Tailwind and shadcn/ui
+- [x] 1.4 Establish folder structure
+- [x] 1.5 Configure environment variables
+- [x] 1.6 Configure error handling and logging
+- [x] 1.7 Configure Docker and local development environment
+- [x] 1.8 Set up Git and development conventions
 
 ### Phase 2 — Database & Infrastructure
 - [ ] 2.1 Configure PostgreSQL
